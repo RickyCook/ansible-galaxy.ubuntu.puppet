@@ -67,6 +67,15 @@
 - name: Force run of puppet agent
   command: /usr/bin/puppet agent apply --test --color=false --server={{ puppet_master }} --environment={{ puppet_environment }} --waitforcert {{ puppet_waitforcert }}
   register: puppet_agent_apply
+  when: puppet_modulepath == false
   failed_when: not puppet_agent_apply.rc in [0, 2]
   tags:
     - run
+
+ - name: Force local run of puppet agent
+   command: /usr/bin/puppet agent apply --test --color=false --modulepath={{ puppet_modulepath }} --environment={{ puppet_environment }}
+   register: puppet_agent_apply
+   when: puppet_modulepath != false
+   failed_when: not puppet_agent_apply.rc in [0, 2]
+   tags:
+     - run
